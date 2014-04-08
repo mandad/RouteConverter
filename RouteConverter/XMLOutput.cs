@@ -57,6 +57,8 @@ namespace RouteConverter
         {
             XmlElement root = (XmlElement)baseXML.FirstChild;
             XmlElement waypointXML;
+            ResourceManager rm = new ResourceManager("RouteConverter.Resources",
+                                               this.GetType().Assembly);
 
             switch (format)
             {
@@ -114,6 +116,20 @@ namespace RouteConverter
                     }
                     root.AppendChild(waypointXML);
                     break;
+                case Format.VisionMaster:
+                    int wpNum = 1;
+                    foreach (Waypoint wp in waypoints)
+                    {
+                        XmlElement wpXML = baseXML.CreateElement("ControlPoints");
+                        AppendChildText(wpXML, "RouteName", routeName);
+                        AppendChildText(wpXML, "SequenceNumber", wpNum.ToString());
+                        AppendChildText(wpXML, "Latitude", (wp.PtLat * Math.PI / 180).ToString());
+                        root.AppendChild(wpXML);
+                        wpNum++;
+                    }
+                    break;
+
+
             }
 
             System.Windows.Forms.SaveFileDialog saveFile = new System.Windows.Forms.SaveFileDialog();
@@ -165,12 +181,15 @@ namespace RouteConverter
                         writer.Close();
                         break;
                     case Format.VisionMaster:
-                        StreamWriter writer = new StreamWriter(saveFile.FileName, false);
-                        string xmlText = Beautify(baseXML);
+                        writer = new StreamWriter(saveFile.FileName, false);
+                        xmlText = Beautify(baseXML);
                         //eliminate <?xml line
                         xmlText = xmlText.Substring(xmlText.IndexOf("\n") + 1);
                         //write schema info
-                        xmlText = xmlText.Replace("<NewDataSet>", "<NewDataSet>" + 
+                        xmlText = xmlText.Replace("<NewDataSet>", "<NewDataSet>" + rm.GetString("VisionMasterSchema"));
+                        writer.Write(xmlText);
+                        writer.Flush();
+                        writer.Close();
                         break;
                 }
             }
@@ -206,6 +225,13 @@ namespace RouteConverter
             wayPointEx.SetAttribute("TTG", "0");
             wayPointEx.SetAttribute("TotalTime", "0");
             wayPointEx.SetAttribute("Speed", "12");     //set speed here
+        }
+
+        //For VisionMaster
+        private XmlElement MakeControlPoints(Waypoint wp)
+        {
+
+            return (XmlElement)baseXML.CreateElement("ControlPoints");
         }
 
         private void AppendChildText(XmlElement parentNode, string nodeName, string innerText)

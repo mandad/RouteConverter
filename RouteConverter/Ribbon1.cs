@@ -39,5 +39,10 @@ namespace RouteConverter
             RunConversion(XMLOutput.Format.GPX);
            
         }
+
+        private void btnVisionMaster_Click(object sender, RibbonControlEventArgs e)
+        {
+            RunConversion(XMLOutput.Format.VisionMaster);
+        }
     }
 }

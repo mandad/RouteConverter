@@ -38,6 +38,7 @@
             this.grpTransas = this.Factory.CreateRibbonGroup();
             this.btnRunTransasConvert = this.Factory.CreateRibbonButton();
             this.btnRunGPX = this.Factory.CreateRibbonButton();
+            this.btnVisionMaster = this.Factory.CreateRibbonButton();
             this.tab1.SuspendLayout();
             this.grpTransas.SuspendLayout();
             // 
@@ -52,6 +53,7 @@
             // 
             this.grpTransas.Items.Add(this.btnRunTransasConvert);
             this.grpTransas.Items.Add(this.btnRunGPX);
+            this.grpTransas.Items.Add(this.btnVisionMaster);
             this.grpTransas.Label = "Route Export";
             this.grpTransas.Name = "grpTransas";
             // 
@@ -66,6 +68,12 @@
             this.btnRunGPX.Label = "GPX";
             this.btnRunGPX.Name = "btnRunGPX";
             this.btnRunGPX.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btnRunGPX_Click);
+            // 
+            // btnVisionMaster
+            // 
+            this.btnVisionMaster.Label = "VisionMaster";
+            this.btnVisionMaster.Name = "btnVisionMaster";
+            this.btnVisionMaster.Click += new Microsoft.Office.Tools.Ribbon.RibbonControlEventHandler(this.btnVisionMaster_Click);
             // 
             // mainRibbon
             // 
@@ -86,6 +94,7 @@
         internal Microsoft.Office.Tools.Ribbon.RibbonGroup grpTransas;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton btnRunTransasConvert;
         internal Microsoft.Office.Tools.Ribbon.RibbonButton btnRunGPX;
+        internal Microsoft.Office.Tools.Ribbon.RibbonButton btnVisionMaster;
     }
 
     partial class ThisRibbonCollection
