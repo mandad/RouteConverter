@@ -48,9 +48,9 @@
     <UpdateIntervalUnits>days</UpdateIntervalUnits>
     <ProductName>Route Converter</ProductName>
     <PublisherName>NOAA</PublisherName>
-    <SupportUrl />
+    <SupportUrl>https://github.com/mandad/RouteConverter/issues</SupportUrl>
     <FriendlyName>Route Converter</FriendlyName>
-    <OfficeApplicationDescription>Converts Basic Routes to GPX and Transas .RT3 format</OfficeApplicationDescription>
+    <OfficeApplicationDescription>Converts Basic Routes to GPX, Transas .RT3 and VisionMaster format</OfficeApplicationDescription>
     <LoadBehavior>16</LoadBehavior>
   </PropertyGroup>
   <ItemGroup>
@@ -69,19 +69,14 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Office.PIARedist.2007">
-      <Visible>False</Visible>
-      <ProductName>Microsoft Office 2007 Primary Interop Assemblies</ProductName>
-      <Install>true</Install>
-    </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.VSTORuntime.4.0">
       <Visible>False</Visible>
       <ProductName>Microsoft Visual Studio 2010 Tools for Office Runtime %28x86 and x64%29</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
-    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.4.5">
       <Visible>False</Visible>
-      <ProductName>Windows Installer 3.1</ProductName>
+      <ProductName>Windows Installer 4.5</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
@@ -155,16 +150,19 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>RouteConverter_1_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>RouteConverter_2_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>F18CEF1B922566D4A6A8049EAEBA2278A2684FAD</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>56D13A0E8CE073E8018E2E732B9E3B0188B652FC</ManifestCertificateThumbprint>
   </PropertyGroup>
   <!--
     This section specifies references for the project.
   -->
   <ItemGroup>
     <Reference Include="Accessibility" />
+    <Reference Include="Gavaghan.Geodesy">
+      <HintPath>.\Gavaghan.Geodesy.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Office.Interop.Excel, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
@@ -260,6 +258,7 @@
       <SubType>Code</SubType>
     </Compile>
     <None Include="RouteConverter_1_TemporaryKey.pfx" />
+    <None Include="RouteConverter_2_TemporaryKey.pfx" />
     <None Include="RouteConverter_TemporaryKey.pfx" />
     <None Include="ThisAddIn.Designer.xml">
       <DependentUpon>ThisAddIn.cs</DependentUpon>

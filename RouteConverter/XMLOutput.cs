@@ -5,6 +5,7 @@ using System.Text;
 using System.Xml;
 using System.IO;
 using System.Resources;
+using Gavaghan.Geodesy;
 
 namespace RouteConverter
 {
@@ -133,7 +134,8 @@ namespace RouteConverter
                     XmlElement summaryXML = baseXML.CreateElement("Summaries");
                     AppendChildText(summaryXML, "Name", routeName);
                     AppendChildText(summaryXML, "DepartureTime", DateTime.Now.AddHours(1).ToString("yyyy-MM-dd\\THH:mm:ss.fffzzz"));
-                    AppendChildText(summaryXML, "Distance", "2000");
+                    double dist = CalcTotalDistance(waypoints);
+                    AppendChildText(summaryXML, "Distance", dist.ToString());
                     summaryXML.AppendChild(baseXML.CreateElement("Description"));
                     summaryXML.AppendChild(baseXML.CreateElement("Notes"));
                     AppendChildText(summaryXML, "Valid", "true");
@@ -172,9 +174,9 @@ namespace RouteConverter
                         AppendChildText(wpXML, "DepartingTrackSpeed", wp.PtSpeed.ToString());
                         AppendChildText(wpXML, "OffTrackAlarmLimitForDepartingTrack", "100");
                         AppendChildText(wpXML, "DepartingControlLineType", "RhumbLine");
-                        AppendChildText(wpXML, "MinTurnSpeed", (wp.PtSpeed - 1).ToString());
+                        AppendChildText(wpXML, "MinTurnSpeed", Math.Max((wp.PtSpeed - 1),0).ToString());    //Prevent negative speeds
                         AppendChildText(wpXML, "MaxTurnSpeed", (wp.PtSpeed + 1).ToString());
-                        AppendChildText(wpXML, "MinDepartingTrackSpeed", (wp.PtSpeed - 1).ToString());
+                        AppendChildText(wpXML, "MinDepartingTrackSpeed", Math.Max((wp.PtSpeed - 1), 0).ToString());
                         AppendChildText(wpXML, "MaxDepartingTrackSpeed", (wp.PtSpeed + 1).ToString());
                         AppendChildText(wpXML, "AdditionalData", "&lt;AllAdditionalData /&gt;");
                         root.AppendChild(wpXML);
@@ -250,6 +252,30 @@ namespace RouteConverter
             }
 
 
+        }
+
+        private double CalcTotalDistance(Waypoint[] waypoints)
+        {
+            GeodeticCalculator geoCalc = new GeodeticCalculator();
+            double totalDist = 0;
+            GlobalCoordinates thisCoord = new GlobalCoordinates(Angle.Zero, Angle.Zero);
+            GlobalCoordinates prevCoord = thisCoord;
+            bool runOne = true;
+            
+            foreach (Waypoint wp in waypoints)
+            {
+                if (!runOne) {
+                    prevCoord = thisCoord;
+                }
+                thisCoord = new GlobalCoordinates(new Angle(wp.PtLat), new Angle(wp.PtLon));
+                if (!runOne)
+                {
+                    GeodeticCurve geoCurve = geoCalc.CalculateGeodeticCurve(Ellipsoid.WGS84, prevCoord, thisCoord);
+                    totalDist += geoCurve.EllipsoidalDistance;
+                }
+                runOne = false;
+            }
+            return totalDist;
         }
 
         //this version has a settable speed
