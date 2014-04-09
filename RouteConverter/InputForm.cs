@@ -17,7 +17,7 @@ namespace RouteConverter
         {
             InitializeComponent();
             this.format = format;
-            this.Text = "Convert to " + (format == XMLOutput.Format.Transas ? " Transas ECDIS" : " GPX");
+            this.Text = "Convert to " + (format == XMLOutput.Format.Transas ? " Transas ECDIS" : (format == XMLOutput.Format.GPX ? " GPX" : " VisionMaster ECDIS"));
         }
 
         private void btnRunConversion_Click(object sender, EventArgs e)

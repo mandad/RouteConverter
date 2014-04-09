@@ -64,6 +64,8 @@ namespace RouteConverter
             switch (format)
             {
                 case Format.Transas:
+                    //<WayPoint ="" LegType="0" RudderAngle="0" Lat="2448.674" Lon="-4425.922" PortXTE="0.100000001490116" StbXTE="0.100000001490116" TurnRate="0" TurnRadius="0.300000011920929" ArrivalC="0"/>
+
                     waypointXML = baseXML.CreateElement("WayPoints");
                     waypointXML.SetAttribute("WPCount", waypoints.Length.ToString());
 
@@ -118,6 +120,44 @@ namespace RouteConverter
                     root.AppendChild(waypointXML);
                     break;
                 case Format.VisionMaster:
+                    //<Summaries>
+                    //    <Name>Annapolis to Baltimore InnerHar</Name>
+                    //    <DepartureTime>2012-06-14T15:05:31.207+00:00</DepartureTime>
+                    //    <Distance>48319.536012207835</Distance>
+                    //    <Description />
+                    //    <Notes />
+                    //    <Valid>true</Valid>
+                    //    <LastModified>2012-06-15T10:23:25.533+00:00</LastModified>
+                    //    <ReadOnly>false</ReadOnly>
+                    //</Summaries>
+                    XmlElement summaryXML = baseXML.CreateElement("Summaries");
+                    AppendChildText(summaryXML, "Name", routeName);
+                    AppendChildText(summaryXML, "DepartureTime", DateTime.Now.AddHours(1).ToString("yyyy-MM-dd\\THH:mm:ss.fffzzz"));
+                    AppendChildText(summaryXML, "Distance", "2000");
+                    summaryXML.AppendChild(baseXML.CreateElement("Description"));
+                    summaryXML.AppendChild(baseXML.CreateElement("Notes"));
+                    AppendChildText(summaryXML, "Valid", "true");
+                    AppendChildText(summaryXML, "LastModified", DateTime.Now.ToString("yyyy-MM-dd\\THH:mm:ss.fffzzz"));
+                    AppendChildText(summaryXML, "ReadOnly", "false");
+                    root.AppendChild(summaryXML);
+
+                    //<ControlPoints>
+                        //<RouteName>Annapolis to Baltimore InnerHar</RouteName>
+                        //<SequenceNumber>1</SequenceNumber>
+                        //<Latitude>0.67998987588787674</Latitude>
+                        //<Longitude>-1.3340697572534803</Longitude>
+                        //<TurnRadius>294.75495460619021</TurnRadius>
+                        //<TurnSpeed>5.1444444444444448</TurnSpeed>
+                        //<OffTrackAlarmLimitForTurn>100</OffTrackAlarmLimitForTurn>
+                        //<DepartingTrackSpeed>5.1444444444444448</DepartingTrackSpeed>
+                        //<OffTrackAlarmLimitForDepartingTrack>100</OffTrackAlarmLimitForDepartingTrack>
+                        //<DepartingControlLineType>RhumbLine</DepartingControlLineType>
+                        //<MinTurnSpeed>4.1155555555555559</MinTurnSpeed>
+                        //<MaxTurnSpeed>6.1733333333333338</MaxTurnSpeed>
+                        //<MinDepartingTrackSpeed>4.1155555555555559</MinDepartingTrackSpeed>
+                        //<MaxDepartingTrackSpeed>6.1733333333333338</MaxDepartingTrackSpeed>
+                        //<AdditionalData>&lt;AllAdditionalData /&gt;</AdditionalData>
+                    //</ControlPoints>
                     int wpNum = 1;
                     foreach (Waypoint wp in waypoints)
                     {
@@ -125,6 +165,18 @@ namespace RouteConverter
                         AppendChildText(wpXML, "RouteName", routeName);
                         AppendChildText(wpXML, "SequenceNumber", wpNum.ToString());
                         AppendChildText(wpXML, "Latitude", (wp.PtLat * Math.PI / 180).ToString());
+                        AppendChildText(wpXML, "Longitude", (wp.PtLon * Math.PI / 180).ToString());
+                        AppendChildText(wpXML, "TurnRadius", "294.75495460619021");
+                        AppendChildText(wpXML, "TurnSpeed", wp.PtSpeed.ToString());
+                        AppendChildText(wpXML, "OffTrackAlarmLimitForTurn", "100");
+                        AppendChildText(wpXML, "DepartingTrackSpeed", wp.PtSpeed.ToString());
+                        AppendChildText(wpXML, "OffTrackAlarmLimitForDepartingTrack", "100");
+                        AppendChildText(wpXML, "DepartingControlLineType", "RhumbLine");
+                        AppendChildText(wpXML, "MinTurnSpeed", (wp.PtSpeed - 1).ToString());
+                        AppendChildText(wpXML, "MaxTurnSpeed", (wp.PtSpeed + 1).ToString());
+                        AppendChildText(wpXML, "MinDepartingTrackSpeed", (wp.PtSpeed - 1).ToString());
+                        AppendChildText(wpXML, "MaxDepartingTrackSpeed", (wp.PtSpeed + 1).ToString());
+                        AppendChildText(wpXML, "AdditionalData", "&lt;AllAdditionalData /&gt;");
                         root.AppendChild(wpXML);
                         wpNum++;
                     }
@@ -187,7 +239,9 @@ namespace RouteConverter
                         //eliminate <?xml line
                         xmlText = xmlText.Substring(xmlText.IndexOf("\n") + 1);
                         //write schema info
-                        xmlText = xmlText.Replace("<NewDataSet>", "<NewDataSet>" + rm.GetString("VisionMasterSchema"));
+                        xmlText = xmlText.Replace("<NewDataSet>", "<NewDataSet>\r\n" + RouteConverter.Properties.Resources.VisionMasterSchema);
+                        //The format has two spaces for indents, should not matter but let's convert:
+                        xmlText = xmlText.Replace("\t", "  ");
                         writer.Write(xmlText);
                         writer.Flush();
                         writer.Close();
@@ -195,7 +249,6 @@ namespace RouteConverter
                 }
             }
 
-            //<WayPoint ="" LegType="0" RudderAngle="0" Lat="2448.674" Lon="-4425.922" PortXTE="0.100000001490116" StbXTE="0.100000001490116" TurnRate="0" TurnRadius="0.300000011920929" ArrivalC="0"/>
 
         }
 
