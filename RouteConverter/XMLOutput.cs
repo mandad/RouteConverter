@@ -47,6 +47,7 @@ namespace RouteConverter
                     break;
                 case Format.VisionMaster:
                     root = baseXML.CreateElement("NewDataSet");
+                    baseXML.AppendChild(root);
                     break;
 
             }
